@@ -108,7 +108,7 @@ def main():
     logger.info('Flip test: {}'.format(flip_test))
 
     #### set up the models
-    model.load_state_dict(torch.load(model_path), strict=True)
+    model.load_state_dict(torch.load(model_path), strict=False)
     model.eval()
     model = model.to(device)
 
