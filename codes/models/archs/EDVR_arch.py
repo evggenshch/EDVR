@@ -237,6 +237,8 @@ class EDVR(nn.Module):
         else:
             self.tsa_fusion = nn.Conv2d(nframes * nf, nf, 1, 1, bias=True)
 
+        print(self.tsa_fusion)
+
         #### reconstruction
         self.recon_trunk = arch_util.make_layer(ResidualBlock_noBN_f, back_RBs)
         #### upsampling

@@ -89,7 +89,12 @@ def main():
     if stage == 2:
         HR_in = True
         back_RBs = 20
-    model = EDVR_arch.EDVR(128, N_in, 8, 5, back_RBs, predeblur=predeblur, HR_in=HR_in)
+
+
+    N_model_default = 7
+
+   # raw_model = EDVR_arch.EDVR(128, N_model_default, 8, 5, back_RBs, predeblur=predeblur, HR_in=HR_in)
+    model = EDVR_arch.EDVR(128, N_in, 8, 5, back_RBs, predeblur=predeblur, HR_in=HR_in, w_TSA = False)
 
     #### dataset
     if data_mode == 'Vid4':
@@ -126,7 +131,14 @@ def main():
     logger.info('Flip test: {}'.format(flip_test))
 
     #### set up the models
-    model.load_state_dict(torch.load(model_path), strict=False)
+    #raw_model.load_state_dict(torch.load(model_path), strict=True)
+
+    model.load_state_dict(torch.load(model_path), strict=True)
+
+    #### change model so it can work with less input
+
+
+
     model.eval()
     model = model.to(device)
 
