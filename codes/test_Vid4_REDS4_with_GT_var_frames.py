@@ -131,10 +131,10 @@ def main():
     logger.info('Flip test: {}'.format(flip_test))
 
     #### set up the models
-    print([a for a in dir(model) if not a.startswith('__') and not callable(getattr(model, a))])
-    raw_model.load_state_dict(torch.load(model_path), strict=True)
+    print([a for a in dir(model) if not callable(getattr(model, a))])  # not a.startswith('__') and
+    #raw_model.load_state_dict(torch.load(model_path), strict=True)
 
-    #model.load_state_dict(torch.load(model_path), strict=True)
+    model.load_state_dict(torch.load(model_path), strict=True)
 
     #### change model so it can work with less input
 
