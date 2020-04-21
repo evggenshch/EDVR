@@ -134,11 +134,9 @@ def main():
     print([a for a in dir(model) if not callable(getattr(model, a))])  # not a.startswith('__') and
     #raw_model.load_state_dict(torch.load(model_path), strict=True)
 
-    model.load_state_dict(torch.load(model_path), strict=True)
+    #   model.load_state_dict(torch.load(model_path), strict=True)
 
     #### change model so it can work with less input
-
-
 
     model.eval()
     model = model.to(device)
