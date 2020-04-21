@@ -93,8 +93,8 @@ def main():
 
     N_model_default = 7
 
-   # raw_model = EDVR_arch.EDVR(128, N_model_default, 8, 5, back_RBs, predeblur=predeblur, HR_in=HR_in)
-    model = EDVR_arch.EDVR(128, N_in, 8, 5, back_RBs, predeblur=predeblur, HR_in=HR_in, w_TSA = False)
+    raw_model = EDVR_arch.EDVR(128, N_model_default, 8, 5, back_RBs, predeblur=predeblur, HR_in=HR_in)
+    model = EDVR_arch.EDVR(128, N_in, 8, 5, back_RBs, predeblur=predeblur, HR_in=HR_in)
 
     #### dataset
     if data_mode == 'Vid4':
@@ -131,9 +131,10 @@ def main():
     logger.info('Flip test: {}'.format(flip_test))
 
     #### set up the models
-    #raw_model.load_state_dict(torch.load(model_path), strict=True)
+    print([a for a in dir(model) if not a.startswith('__') and not callable(getattr(model, a))])
+    raw_model.load_state_dict(torch.load(model_path), strict=True)
 
-    model.load_state_dict(torch.load(model_path), strict=True)
+    #model.load_state_dict(torch.load(model_path), strict=True)
 
     #### change model so it can work with less input
 
