@@ -166,9 +166,9 @@ def main():
 
     model.pcd_align = raw_model.pcd_align #PCD_Align(nf=nf, groups=groups)
     if model.w_TSA:
-        model.tsa_fusion = raw_model.tsa_fusion #TSA_Fusion(nf=nf, nframes=nframes, center=self.center)
+        model.tsa_fusion = raw_model.tsa_fusion[:][:128 * N_in][:][:] #TSA_Fusion(nf=nf, nframes=nframes, center=self.center)
     else:
-        model.tsa_fusion = raw_model.tsa_fusion #nn.Conv2d(nframes * nf, nf, 1, 1, bias=True)
+        model.tsa_fusion = raw_model.tsa_fusion[:][:128 * N_in][:][:] #nn.Conv2d(nframes * nf, nf, 1, 1, bias=True)
 
     #   print(self.tsa_fusion)
 
