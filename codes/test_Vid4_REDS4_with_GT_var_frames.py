@@ -164,11 +164,44 @@ def main():
     model.fea_L3_conv1 = raw_model.fea_L3_conv1 #nn.Conv2d(nf, nf, 3, 2, 1, bias=True)
     model.fea_L3_conv2 = raw_model.fea_L3_conv2 #nn.Conv2d(nf, nf, 3, 1, 1, bias=True)
 
+
     model.pcd_align = raw_model.pcd_align #PCD_Align(nf=nf, groups=groups)
-    if model.w_TSA:
-        model.tsa_fusion = raw_model.tsa_fusion[:][:128 * N_in][:][:] #TSA_Fusion(nf=nf, nframes=nframes, center=self.center)
-    else:
-        model.tsa_fusion = raw_model.tsa_fusion[:][:128 * N_in][:][:] #nn.Conv2d(nframes * nf, nf, 1, 1, bias=True)
+
+
+    ######## Resize TSA
+
+    model.tsa_fusion.center = model.center
+    # temporal attention (before fusion conv)
+    model.tsa_fusion.tAtt_1 = raw_model.tsa_fusion.tAtt_1
+    model.tsa_fusion.tAtt_2 = raw_model.tsa_fusion.tAtt_2
+
+    # fusion conv: using 1x1 to save parameters and computation
+
+    print("MAIN SHAPE: ", raw_model.tsa_fusion.sAtt_1.weight.shape)
+
+    model.tsa_fusion.fea_fusion = raw_model.tsa_fusion.sAtt_1#[:][] #nn.Conv2d(nframes * nf, nf, 1, 1, bias=True)
+
+    # spatial attention (after fusion conv)
+    model.tsa_fusion.sAtt_1 = raw_model.tsa_fusion.sAtt_1#[:][] #nn.Conv2d(nframes * nf, nf, 1, 1, bias=True)
+    model.tsa_fusion.maxpool = raw_model.tsa_fusion.maxpool
+    model.tsa_fusion.avgpool = raw_model.tsa_fusion.avgpool
+    model.tsa_fusion.sAtt_2 = raw_model.tsa_fusion.sAtt_2
+    model.tsa_fusion.sAtt_3 = raw_model.tsa_fusion.sAtt_3
+    model.tsa_fusion.sAtt_4 = raw_model.tsa_fusion.sAtt_4
+    model.tsa_fusion.sAtt_5 = raw_model.tsa_fusion.sAtt_5
+    model.tsa_fusion.sAtt_L1 = raw_model.tsa_fusion.sAtt_L1
+    model.tsa_fusion.sAtt_L2 = raw_model.tsa_fusion.sAtt_L2
+    model.tsa_fusion.sAtt_L3 = raw_model.tsa_fusion.sAtt_L3
+    model.tsa_fusion.sAtt_add_1 = raw_model.tsa_fusion.sAtt_add_1
+    model.tsa_fusion.sAtt_add_2 = raw_model.tsa_fusion.sAtt_add_2
+
+    model.tsa_fusion.lrelu = raw_model.tsa_fusion.lrelu
+
+
+    #if model.w_TSA:
+    #    model.tsa_fusion = raw_model.tsa_fusion[:][:128 * N_in][:][:] #TSA_Fusion(nf=nf, nframes=nframes, center=self.center)
+    #else:
+    #    model.tsa_fusion = raw_model.tsa_fusion[:][:128 * N_in][:][:] #nn.Conv2d(nframes * nf, nf, 1, 1, bias=True)
 
     #   print(self.tsa_fusion)
 
