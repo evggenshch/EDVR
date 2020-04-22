@@ -179,10 +179,15 @@ def main():
 
     print("MAIN SHAPE: ", raw_model.tsa_fusion.sAtt_1.weight.shape)
 
-    model.tsa_fusion.fea_fusion = raw_model.tsa_fusion.sAtt_1#[:][] #nn.Conv2d(nframes * nf, nf, 1, 1, bias=True)
+    model.tsa_fusion.fea_fusion = raw_model.tsa_fusion.fea_fusion
+    model.tsa_fusion.fea_fusion.weight = raw_model.tsa_fusion.fea_fusion.weight[:][N_in * 128][:][:]#[:][] #nn.Conv2d(nframes * nf, nf, 1, 1, bias=True)
+    #model.tsa_fusion.fea_fusion.bias = raw_model.tsa_fusion.fea_fusion.bias
 
     # spatial attention (after fusion conv)
-    model.tsa_fusion.sAtt_1 = raw_model.tsa_fusion.sAtt_1#[:][] #nn.Conv2d(nframes * nf, nf, 1, 1, bias=True)
+    model.tsa_fusion.sAtt_1 = raw_model.tsa_fusion.sAtt_1
+    model.tsa_fusion.sAtt_1.weight = raw_model.tsa_fusion.sAtt_1.weight[:][N_in * 128][:][:]#[:][] #nn.Conv2d(nframes * nf, nf, 1, 1, bias=True)
+    #model.tsa_fusion.sAtt_1.bias = raw_model.tsa_fusion.sAtt_1.bias
+
     model.tsa_fusion.maxpool = raw_model.tsa_fusion.maxpool
     model.tsa_fusion.avgpool = raw_model.tsa_fusion.avgpool
     model.tsa_fusion.sAtt_2 = raw_model.tsa_fusion.sAtt_2
