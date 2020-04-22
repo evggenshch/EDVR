@@ -133,56 +133,56 @@ def main():
     #### set up the models
     print([a for a in dir(model) if not callable(getattr(model, a))])  # not a.startswith('__') and
 
-    model.load_state_dict(torch.load(model_path), strict=True)
-    #raw_model.load_state_dict(torch.load(model_path), strict=True)
+    #model.load_state_dict(torch.load(model_path), strict=True)
+    raw_model.load_state_dict(torch.load(model_path), strict=True)
 
     #   model.load_state_dict(torch.load(model_path), strict=True)
 
     #### change model so it can work with less input
 
-    #model.nf = raw_model.nf
-    #model.center = N_in // 2 #  if center is None else center
-    #model.is_predeblur = raw_model.is_predeblur
-    #model.HR_in = raw_model.HR_in
-    #model.w_TSA = raw_model.w_TSA
+    model.nf = raw_model.nf
+    model.center = N_in // 2 #  if center is None else center
+    model.is_predeblur = raw_model.is_predeblur
+    model.HR_in = raw_model.HR_in
+    model.w_TSA = raw_model.w_TSA
     #ResidualBlock_noBN_f = functools.partial(arch_util.ResidualBlock_noBN, nf=nf)
 
     #### extract features (for each frame)
-    #if model.is_predeblur:
-    #    model.pre_deblur = raw_model.pre_deblur #Predeblur_ResNet_Pyramid(nf=nf, HR_in=self.HR_in)
-    #    model.conv_1x1 = raw_model.conv_1x1 #nn.Conv2d(nf, nf, 1, 1, bias=True)
-    #else:
-    #    if model.HR_in:
-    #        model.conv_first_1 = raw_model.conv_first_1 #nn.Conv2d(3, nf, 3, 1, 1, bias=True)
-    #        model.conv_first_2 = raw_model.conv_first_2 #nn.Conv2d(nf, nf, 3, 2, 1, bias=True)
-    #        model.conv_first_3 = raw_model.conv_first_3 #nn.Conv2d(nf, nf, 3, 2, 1, bias=True)
-    #    else:
-    #        model.conv_first = raw_model.conv_first # nn.Conv2d(3, nf, 3, 1, 1, bias=True)
-    #model.feature_extraction = raw_model.feature_extraction #  arch_util.make_layer(ResidualBlock_noBN_f, front_RBs)
-    #model.fea_L2_conv1 = raw_model.fea_L2_conv1 #nn.Conv2d(nf, nf, 3, 2, 1, bias=True)
-    #model.fea_L2_conv2 = raw_model.fea_L2_conv2 #nn.Conv2d(nf, nf, 3, 1, 1, bias=True)
-    #model.fea_L3_conv1 = raw_model.fea_L3_conv1 #nn.Conv2d(nf, nf, 3, 2, 1, bias=True)
-    #model.fea_L3_conv2 = raw_model.fea_L3_conv2 #nn.Conv2d(nf, nf, 3, 1, 1, bias=True)
+    if model.is_predeblur:
+        model.pre_deblur = raw_model.pre_deblur #Predeblur_ResNet_Pyramid(nf=nf, HR_in=self.HR_in)
+        model.conv_1x1 = raw_model.conv_1x1 #nn.Conv2d(nf, nf, 1, 1, bias=True)
+    else:
+        if model.HR_in:
+            model.conv_first_1 = raw_model.conv_first_1 #nn.Conv2d(3, nf, 3, 1, 1, bias=True)
+            model.conv_first_2 = raw_model.conv_first_2 #nn.Conv2d(nf, nf, 3, 2, 1, bias=True)
+            model.conv_first_3 = raw_model.conv_first_3 #nn.Conv2d(nf, nf, 3, 2, 1, bias=True)
+        else:
+            model.conv_first = raw_model.conv_first # nn.Conv2d(3, nf, 3, 1, 1, bias=True)
+    model.feature_extraction = raw_model.feature_extraction #  arch_util.make_layer(ResidualBlock_noBN_f, front_RBs)
+    model.fea_L2_conv1 = raw_model.fea_L2_conv1 #nn.Conv2d(nf, nf, 3, 2, 1, bias=True)
+    model.fea_L2_conv2 = raw_model.fea_L2_conv2 #nn.Conv2d(nf, nf, 3, 1, 1, bias=True)
+    model.fea_L3_conv1 = raw_model.fea_L3_conv1 #nn.Conv2d(nf, nf, 3, 2, 1, bias=True)
+    model.fea_L3_conv2 = raw_model.fea_L3_conv2 #nn.Conv2d(nf, nf, 3, 1, 1, bias=True)
 
-    #model.pcd_align = raw_model.pcd_align #PCD_Align(nf=nf, groups=groups)
-    #if model.w_TSA:
-    #    model.tsa_fusion = TSA_Fusion(nf=nf, nframes=nframes, center=self.center)
-    #else:
-    #    model.tsa_fusion = nn.Conv2d(nframes * nf, nf, 1, 1, bias=True)
+    model.pcd_align = raw_model.pcd_align #PCD_Align(nf=nf, groups=groups)
+    if model.w_TSA:
+        model.tsa_fusion = raw_model.tsa_fusion #TSA_Fusion(nf=nf, nframes=nframes, center=self.center)
+    else:
+        model.tsa_fusion = raw_model.tsa_fusion #nn.Conv2d(nframes * nf, nf, 1, 1, bias=True)
 
     #   print(self.tsa_fusion)
 
     #### reconstruction
-    #model.recon_trunk = raw_model.recon_trunk # arch_util.make_layer(ResidualBlock_noBN_f, back_RBs)
+    model.recon_trunk = raw_model.recon_trunk # arch_util.make_layer(ResidualBlock_noBN_f, back_RBs)
     #### upsampling
-    #model.upconv1 = raw_model.upconv1 #nn.Conv2d(nf, nf * 4, 3, 1, 1, bias=True)
-    #model.upconv2 = raw_model.upconv2 #nn.Conv2d(nf, 64 * 4, 3, 1, 1, bias=True)
-    #model.pixel_shuffle = raw_model.pixel_shuffle # nn.PixelShuffle(2)
-    #model.HRconv = raw_model.HRconv
-    #model.conv_last = raw_model.lrelu
+    model.upconv1 = raw_model.upconv1 #nn.Conv2d(nf, nf * 4, 3, 1, 1, bias=True)
+    model.upconv2 = raw_model.upconv2 #nn.Conv2d(nf, 64 * 4, 3, 1, 1, bias=True)
+    model.pixel_shuffle = raw_model.pixel_shuffle # nn.PixelShuffle(2)
+    model.HRconv = raw_model.HRconv
+    model.conv_last = raw_model.lrelu
 
     #### activation function
-    #model.lrelu = raw_model.lrelu
+    model.lrelu = raw_model.lrelu
 
 
 
