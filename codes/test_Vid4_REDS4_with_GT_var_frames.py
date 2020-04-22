@@ -177,10 +177,10 @@ def main():
 
     # fusion conv: using 1x1 to save parameters and computation
 
-    print("MAIN SHAPE: ", raw_model.tsa_fusion.sAtt_1.weight.shape)
+    print("MAIN SHAPE(FEA): ", raw_model.tsa_fusion.fea_fusion.weight.shape)
 
     model.tsa_fusion.fea_fusion = raw_model.tsa_fusion.fea_fusion
-    model.tsa_fusion.fea_fusion.weight = raw_model.tsa_fusion.fea_fusion.weight[N_in * 128][:][:][:]#[:][] #nn.Conv2d(nframes * nf, nf, 1, 1, bias=True)
+    model.tsa_fusion.fea_fusion.weight = raw_model.tsa_fusion.fea_fusion.weight[:][:][N_in * 128][:]#[:][] #nn.Conv2d(nframes * nf, nf, 1, 1, bias=True)
     #model.tsa_fusion.fea_fusion.bias = raw_model.tsa_fusion.fea_fusion.bias
 
     # spatial attention (after fusion conv)
