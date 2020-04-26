@@ -32,7 +32,7 @@ def main():
     #args = parser.parse_args()
 
     data_mode = 'Vid4' #str(args.dataset)
-    N_in = 5 #int(args.n_frames)
+    N_in = 4 #int(args.n_frames)
 
     #if args.command == 'start':
     #    start(int(args.params[0]))
@@ -179,7 +179,7 @@ def main():
 
     # fusion conv: using 1x1 to save parameters and computation
 
-    #print(raw_model.tsa_fusion.fea_fusion.weight.shape)
+    print(raw_model.tsa_fusion.fea_fusion.weight.shape)
 
     #print(raw_model.tsa_fusion.fea_fusion.weight.shape)
     #print(raw_model.tsa_fusion.fea_fusion.weight[127][639].shape)
@@ -196,9 +196,9 @@ def main():
     #[:][] #nn.Conv2d(nframes * nf, nf, 1, 1, bias=True)
     #model.tsa_fusion.sAtt_1.bias = raw_model.tsa_fusion.sAtt_1.bias
 
-    #print(N_in * 128)
+    print(N_in * 128)
     #print(raw_model.tsa_fusion.fea_fusion.weight[:, 0:N_in * 128, :, :].shape)
-    #print(model.tsa_fusion.fea_fusion.weight.shape)
+    print(model.tsa_fusion.fea_fusion.weight.shape)
 
     model.tsa_fusion.maxpool = raw_model.tsa_fusion.maxpool
     model.tsa_fusion.avgpool = raw_model.tsa_fusion.avgpool
@@ -229,7 +229,7 @@ def main():
     model.upconv2 = raw_model.upconv2 #nn.Conv2d(nf, 64 * 4, 3, 1, 1, bias=True)
     model.pixel_shuffle = raw_model.pixel_shuffle # nn.PixelShuffle(2)
     model.HRconv = raw_model.HRconv
-    model.conv_last = raw_model.lrelu
+    model.conv_last = raw_model.conv_last
 
     #### activation function
     model.lrelu = raw_model.lrelu
