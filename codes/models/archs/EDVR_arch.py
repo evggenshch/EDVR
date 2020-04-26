@@ -253,6 +253,9 @@ class EDVR(nn.Module):
 
     def forward(self, x):
         B, N, C, H, W = x.size()  # N video frames
+
+        print("FORWARD SIZE: ", B, N, C, H, W)    #    debug
+
         x_center = x[:, self.center, :, :, :].contiguous()
 
         #### extract LR features

@@ -179,7 +179,7 @@ def main():
 
     # fusion conv: using 1x1 to save parameters and computation
 
-    print(raw_model.tsa_fusion.fea_fusion.weight.shape)
+    #print(raw_model.tsa_fusion.fea_fusion.weight.shape)
 
     #print(raw_model.tsa_fusion.fea_fusion.weight.shape)
     #print(raw_model.tsa_fusion.fea_fusion.weight[127][639].shape)
@@ -196,9 +196,9 @@ def main():
     #[:][] #nn.Conv2d(nframes * nf, nf, 1, 1, bias=True)
     #model.tsa_fusion.sAtt_1.bias = raw_model.tsa_fusion.sAtt_1.bias
 
-    print(N_in * 128)
+    #print(N_in * 128)
     #print(raw_model.tsa_fusion.fea_fusion.weight[:, 0:N_in * 128, :, :].shape)
-    print(model.tsa_fusion.fea_fusion.weight.shape)
+    #print(model.tsa_fusion.fea_fusion.weight.shape)
 
     model.tsa_fusion.maxpool = raw_model.tsa_fusion.maxpool
     model.tsa_fusion.avgpool = raw_model.tsa_fusion.avgpool
