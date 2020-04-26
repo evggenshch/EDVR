@@ -108,7 +108,7 @@ def read_img_seq(path):
     return imgs
 
 
-def index_generation(crt_i, max_n, N, padding='reflection'):
+def index_generation(crt_i, max_n, N, padding='reflection'):     #   HERE MISMATCH
     """Generate an index list for reading N frames from a sequence of images
     Args:
         crt_i (int): current center index
@@ -124,11 +124,13 @@ def index_generation(crt_i, max_n, N, padding='reflection'):
     Returns:
         return_l (list [int]): a list of indexes
     """
+
+
     max_n = max_n - 1
     n_pad = N // 2
     return_l = []
 
-    for i in range(crt_i - n_pad, crt_i + n_pad + 1):
+    for i in range(crt_i - n_pad, crt_i + n_pad + (N % 2)):  #+ 1):
         if i < 0:
             if padding == 'replicate':
                 add_idx = 0

@@ -24,15 +24,15 @@ def main():
     ####################
     #  [format] dataset(vid4, REDS4) N(number of frames)
 
-    #parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser()
 
-    #parser.add_argument('dataset')
-    #parser.add_argument('n_frames')
+    parser.add_argument('dataset')
+    parser.add_argument('n_frames')
 
-    #args = parser.parse_args()
+    args = parser.parse_args()
 
-    data_mode = 'Vid4' #str(args.dataset)
-    N_in = 4 #int(args.n_frames)
+    data_mode = str(args.dataset)
+    N_in = int(args.n_frames)
 
     #if args.command == 'start':
     #    start(int(args.params[0]))
@@ -179,7 +179,7 @@ def main():
 
     # fusion conv: using 1x1 to save parameters and computation
 
-    print(raw_model.tsa_fusion.fea_fusion.weight.shape)
+    #print(raw_model.tsa_fusion.fea_fusion.weight.shape)
 
     #print(raw_model.tsa_fusion.fea_fusion.weight.shape)
     #print(raw_model.tsa_fusion.fea_fusion.weight[127][639].shape)
@@ -196,9 +196,9 @@ def main():
     #[:][] #nn.Conv2d(nframes * nf, nf, 1, 1, bias=True)
     #model.tsa_fusion.sAtt_1.bias = raw_model.tsa_fusion.sAtt_1.bias
 
-    print(N_in * 128)
+    #print(N_in * 128)
     #print(raw_model.tsa_fusion.fea_fusion.weight[:, 0:N_in * 128, :, :].shape)
-    print(model.tsa_fusion.fea_fusion.weight.shape)
+    print("MODEL TSA SHAPE: ", model.tsa_fusion.fea_fusion.weight.shape)
 
     model.tsa_fusion.maxpool = raw_model.tsa_fusion.maxpool
     model.tsa_fusion.avgpool = raw_model.tsa_fusion.avgpool
@@ -255,6 +255,9 @@ def main():
 
         img_path_l = sorted(glob.glob(osp.join(subfolder, '*')))
         max_idx = len(img_path_l)
+
+        print("MAX_IDX: ", max_idx)
+
         if save_imgs:
             util.mkdirs(save_subfolder)
 
@@ -269,13 +272,15 @@ def main():
         # process each image
         for img_idx, img_path in enumerate(img_path_l):
             img_name = osp.splitext(osp.basename(img_path))[0]
-            select_idx = data_util.index_generation(img_idx, max_idx, N_in, padding=padding)
+            select_idx = data_util.index_generation(img_idx, max_idx, N_in, padding=padding)    #  HERE GOTCHA
+            print("SELECT IDX: ", select_idx)
+
             imgs_in = imgs_LQ.index_select(0, torch.LongTensor(select_idx)).unsqueeze(0).to(device)
 
             if flip_test:
                 output = util.flipx4_forward(model, imgs_in)
             else:
-                print(imgs_in.shape)
+                print("IMGS_IN SHAPE: ", imgs_in.shape)         # check this
                 output = util.single_forward(model, imgs_in)    # error here 1
             output = util.tensor2img(output.squeeze(0))
 
