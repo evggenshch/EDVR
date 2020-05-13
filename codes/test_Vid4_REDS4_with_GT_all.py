@@ -87,7 +87,7 @@ def main():
 
         test_dataset_folder = '../datasets/Vid4/BIx4'
         GT_dataset_folder = '../datasets/Vid4/GT'
-        aposterior_GT_dataset_folder = '../results/Vid4/GT_7'
+        aposterior_GT_dataset_folder = '../datasets/Vid4/GT_7'
 
         crop_border = 0
         border_frame = N_in // 2  # border frames when evaluate
@@ -223,6 +223,7 @@ def main():
                 output_a, GT_a = util.crop_border([output_a, GT_a], crop_border)
 
                 crt_aposterior = util.calculate_ssim(output_a * 255, GT_a * 255)  # CHANGE
+
 
                 dir_idx = vid4_dir_map.get(str(subfolder_name))
                 file_idx = vid4_files_map[dir_idx].get(str(img_name))
