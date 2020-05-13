@@ -76,8 +76,8 @@ def main():
     N_model_default = 7
     data_mode = 'Vid4'
 
-    vid4_dir_map = {"calendar": 0, "city": 1, "foliage": 2, "walk": 3}
-    vid4_files_map = 4 * [{}]
+    #vid4_dir_map = {"calendar": 0, "city": 1, "foliage": 2, "walk": 3}
+    vid4_files_map = {"calendar": {}, "city": {}, "foliage": {}, "walk": {}}
 
     vid4_results = 4 * [[]]
 
@@ -225,19 +225,19 @@ def main():
                 crt_aposterior = util.calculate_ssim(output_a * 255, GT_a * 255)  # CHANGE
 
 
-                dir_idx = vid4_dir_map.get(str(subfolder_name))
-                file_idx = vid4_files_map[dir_idx].get(str(img_name))
+                #dir_idx = vid4_dir_map.get(str(subfolder_name))
+                file_idx = vid4_files_map[subfolder_name].get(str(img_name))
                 if file_idx != None:
-                    vid4_results[dir_idx][file_idx].add_psnr(crt_psnr)
-                    vid4_results[dir_idx][file_idx].add_gt_ssim(crt_ssim)
-                    vid4_results[dir_idx][file_idx].add_aposterior_ssim(crt_aposterior)
+                    vid4_results[subfolder_name][file_idx].add_psnr(crt_psnr)
+                    vid4_results[subfolder_name][file_idx].add_gt_ssim(crt_ssim)
+                    vid4_results[subfolder_name][file_idx].add_aposterior_ssim(crt_aposterior)
                 else:
-                    vid4_results[dir_idx].append(metrics_file(str(img_name)))
-                    new_file_idx = len(vid4_results[dir_idx]) - 1
-                    vid4_results[dir_idx][new_file_idx].add_psnr(crt_psnr)
-                    vid4_results[dir_idx][new_file_idx].add_gt_ssim(crt_ssim)
-                    vid4_results[dir_idx][new_file_idx].add_aposterior_ssim(crt_aposterior)
-                    vid4_files_map[dir_idx].update([(str(img_name), new_file_idx)])
+                    vid4_results[subfolder_name].append(metrics_file(str(img_name)))
+                    new_file_idx = len(vid4_results[subfolder_name]) - 1
+                    vid4_results[subfolder_name][new_file_idx].add_psnr(crt_psnr)
+                    vid4_results[subfolder_name][new_file_idx].add_gt_ssim(crt_ssim)
+                    vid4_results[subfolder_name][new_file_idx].add_aposterior_ssim(crt_aposterior)
+                    vid4_files_map[subfolder_name].update([(str(img_name), new_file_idx)])
 
 
                 #  добавляем в словарь имя папки -> имя файла -> имя метрики
