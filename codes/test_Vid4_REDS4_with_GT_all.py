@@ -291,7 +291,7 @@ def main():
 
     for i, dir_name in enumerate(["calendar", "city", "foliage", "walk"]):
         save_subfolder = osp.join(save_folder, dir_name)
-        for j, value in range(vid4_results[dir_name].items()):
+        for j, value in vid4_results[dir_name].items():
             cur_result = json.dumps(value.__dict__)
             with open(osp.join(save_subfolder, '{}.json'.format(value.name)), 'w') as outfile:
                 json.dump(cur_result, outfile)
@@ -312,6 +312,135 @@ def main():
 
     # STAGE REDS
 
+    reds4_results = {"000": {}, "011": {}, "015": {}, "020": {}}
+   #reds4_dir_map = {"000": 0, "011": 1, "015": 2, "020": 3}
+    #reds4_files_map = 4 * [{}]
+
+    #reds4_results = 4 * [[]]
+
+    #for N_in in range(1, N_model_default + 1):
+    #    for stage in range(2):
+    #    data_mode = 'blur_comp'
+
+
+            #  data_mode == 'blur_comp'::   by default
+    #        if stage == 0:
+    #            model_path = '../experiments/pretrained_models/EDVR_REDS_deblurcomp_L.pth'
+    #        else:
+    #            model_path = '../experiments/pretrained_models/EDVR_REDS_deblurcomp_Stage2.pth'
+
+    #    predeblur, HR_in = False, False
+    #    back_RBs = 40
+    #    if data_mode == 'blur_bicubic':
+    #        predeblur = True
+    #    if data_mode == 'blur' or data_mode == 'blur_comp':
+    #        predeblur, HR_in = True, True
+    #    if stage == 2:
+    #        HR_in = True
+    #        back_RBs = 20
+
+    #    if data_mode == 'Vid4':
+    #        N_model_default = 7
+    #    else:
+    #        N_model_default = 5
+
+     #   raw_model = EDVR_arch.EDVR(128, N_model_default, 8, 5, back_RBs, predeblur=predeblur, HR_in=HR_in)
+    #    model = EDVR_arch.EDVR(128, N_in, 8, 5, back_RBs, predeblur=predeblur, HR_in=HR_in)
+
+        #### dataset
+     #   if data_mode == 'Vid4':
+      #      test_dataset_folder = '../datasets/Vid4/BIx4'
+      #      GT_dataset_folder = '../datasets/Vid4/GT'
+      #  else:
+      #      if stage == 1:
+      #          test_dataset_folder = '../datasets/REDS4/{}'.format(data_mode)
+      #      else:
+      #          test_dataset_folder = '../results/REDS-EDVR_REDS_SR_L_flipx4'
+      #          print('You should modify the test_dataset_folder path for stage 2')
+      #      GT_dataset_folder = '../datasets/REDS4/GT'
+
+        #### evaluation
+     #   crop_border = 0
+     #   border_frame = N_in // 2  # border frames when evaluate
+        # temporal padding mode
+     #   if data_mode == 'Vid4' or data_mode == 'sharp_bicubic':
+     #       padding = 'new_info'
+     #   else:
+     #       padding = 'replicate'
+
+
+      #  raw_model = EDVR_arch.EDVR(128, N_model_default, 8, 5, back_RBs, predeblur=predeblur, HR_in=HR_in)
+      #  model = EDVR_arch.EDVR(128, N_in, 8, 5, back_RBs, predeblur=predeblur, HR_in=HR_in)
+
+      #  test_dataset_folder = '../datasets/Vid4/BIx4'
+      #  GT_dataset_folder = '../datasets/Vid4/GT'
+      #  aposterior_GT_dataset_folder = '../results/Vid4/GT_7'
+
+        crop_border = 0
+        border_frame = N_in // 2  # border frames when evaluate
+        padding = 'new_info'
+
+
+        raw_model.load_state_dict(torch.load(model_path), strict=True)
+
+        model.nf = raw_model.nf
+        model.center = N_in // 2  # if center is None else center
+        model.is_predeblur = raw_model.is_predeblur
+        model.HR_in = raw_model.HR_in
+        model.w_TSA = raw_model.w_TSA
+
+        if model.is_predeblur:
+            model.pre_deblur = raw_model.pre_deblur  # Predeblur_ResNet_Pyramid(nf=nf, HR_in=self.HR_in)
+            model.conv_1x1 = raw_model.conv_1x1  # nn.Conv2d(nf, nf, 1, 1, bias=True)
+        else:
+            if model.HR_in:
+                model.conv_first_1 = raw_model.conv_first_1  # nn.Conv2d(3, nf, 3, 1, 1, bias=True)
+                model.conv_first_2 = raw_model.conv_first_2  # nn.Conv2d(nf, nf, 3, 2, 1, bias=True)
+                model.conv_first_3 = raw_model.conv_first_3  # nn.Conv2d(nf, nf, 3, 2, 1, bias=True)
+            else:
+                model.conv_first = raw_model.conv_first  # nn.Conv2d(3, nf, 3, 1, 1, bias=True)
+        model.feature_extraction = raw_model.feature_extraction  # arch_util.make_layer(ResidualBlock_noBN_f, front_RBs)
+        model.fea_L2_conv1 = raw_model.fea_L2_conv1  # nn.Conv2d(nf, nf, 3, 2, 1, bias=True)
+        model.fea_L2_conv2 = raw_model.fea_L2_conv2  # nn.Conv2d(nf, nf, 3, 1, 1, bias=True)
+        model.fea_L3_conv1 = raw_model.fea_L3_conv1  # nn.Conv2d(nf, nf, 3, 2, 1, bias=True)
+        model.fea_L3_conv2 = raw_model.fea_L3_conv2  # nn.Conv2d(nf, nf, 3, 1, 1, bias=True)
+
+        model.pcd_align = raw_model.pcd_align  # PCD_Align(nf=nf, groups=groups)
+
+        model.tsa_fusion.center = model.center
+
+        model.tsa_fusion.tAtt_1 = raw_model.tsa_fusion.tAtt_1
+        model.tsa_fusion.tAtt_2 = raw_model.tsa_fusion.tAtt_2
+
+        model.tsa_fusion.fea_fusion = copy.deepcopy(raw_model.tsa_fusion.fea_fusion)
+        model.tsa_fusion.fea_fusion.weight = copy.deepcopy(torch.nn.Parameter(raw_model.tsa_fusion.fea_fusion.weight[:, 0:N_in * 128, :, :]))
+
+        model.tsa_fusion.sAtt_1 = copy.deepcopy(raw_model.tsa_fusion.sAtt_1)
+        model.tsa_fusion.sAtt_1.weight = copy.deepcopy(torch.nn.Parameter(raw_model.tsa_fusion.sAtt_1.weight[:, 0:N_in * 128, :, :]))
+
+        model.tsa_fusion.maxpool = raw_model.tsa_fusion.maxpool
+        model.tsa_fusion.avgpool = raw_model.tsa_fusion.avgpool
+        model.tsa_fusion.sAtt_2 = raw_model.tsa_fusion.sAtt_2
+        model.tsa_fusion.sAtt_3 = raw_model.tsa_fusion.sAtt_3
+        model.tsa_fusion.sAtt_4 = raw_model.tsa_fusion.sAtt_4
+        model.tsa_fusion.sAtt_5 = raw_model.tsa_fusion.sAtt_5
+        model.tsa_fusion.sAtt_L1 = raw_model.tsa_fusion.sAtt_L1
+        model.tsa_fusion.sAtt_L2 = raw_model.tsa_fusion.sAtt_L2
+        model.tsa_fusion.sAtt_L3 = raw_model.tsa_fusion.sAtt_L3
+        model.tsa_fusion.sAtt_add_1 = raw_model.tsa_fusion.sAtt_add_1
+        model.tsa_fusion.sAtt_add_2 = raw_model.tsa_fusion.sAtt_add_2
+
+        model.tsa_fusion.lrelu = raw_model.tsa_fusion.lrelu
+
+        model.recon_trunk = raw_model.recon_trunk
+
+        model.upconv1 = raw_model.upconv1
+        model.upconv2 = raw_model.upconv2
+        model.pixel_shuffle = raw_model.pixel_shuffle
+        model.HRconv = raw_model.HRconv
+        model.conv_last = raw_model.conv_last
+
+        model.lrelu = raw_model.lrelu
 
 
 
