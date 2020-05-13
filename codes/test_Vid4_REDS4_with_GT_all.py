@@ -19,6 +19,25 @@ import models.archs.EDVR_arch as EDVR_arch
 
 import argparse
 
+class metrics_file:
+
+    def __init__(self, name):
+        self.name = name
+        self.gt_ssim = []
+        self.aposterior_ssim = []
+        self.psnr = []
+
+    def add_gt_ssim(self, gt_ssim):
+        self.gt_ssim.append(gt_ssim)
+
+    def add_aposterior_ssim(self, aposterior_ssim):
+        self.aposterior_ssim.append(aposterior_ssim)
+
+    def add_psnr(self, psnr):
+        self.psnr.append(psnr)
+
+
+
 def main():
     ####################
     # arguments parser #
@@ -57,35 +76,24 @@ def main():
     N_model_default = 7
     data_mode = 'Vid4'
 
-    total_results_vid4 = {"": , "": , "":, "":}
-    total_results_reds = {"": ,"": ,"":, "":}
+    vid4_dir_map = {"calendar": 0, "city": 1, "foliage": 2, "walk": 3}
+    vid4_files_map = 4 * [{}]
 
-    for N_in in range(N_model_default, 0, -1):
+    vid4_results = 4 * [[]]
+
+    for N_in in range(1, N_model_default + 1):
         raw_model = EDVR_arch.EDVR(128, N_model_default, 8, 5, back_RBs, predeblur=predeblur, HR_in=HR_in)
         model = EDVR_arch.EDVR(128, N_in, 8, 5, back_RBs, predeblur=predeblur, HR_in=HR_in)
 
         test_dataset_folder = '../datasets/Vid4/BIx4'
         GT_dataset_folder = '../datasets/Vid4/GT'
-        #if N_in < N_model_default:
-        aposterior_GT_dataset_folder = '../results/Vid4/7'
+        aposterior_GT_dataset_folder = '../results/Vid4/GT_7'
 
         crop_border = 0
         border_frame = N_in // 2  # border frames when evaluate
         padding = 'new_info'
 
-        save_imgs = True
-        save_folder = '../results/{}/{}'.format(data_mode).format(str(N_in))
-        util.mkdirs(save_folder)
-        util.setup_logger('base', save_folder, 'test', level=logging.INFO, screen=True, tofile=True)
-
-        logger = logging.getLogger('base')
-
-    #### log info
-        logger.info('Data: {} - {}'.format(data_mode, test_dataset_folder))
-        logger.info('Padding mode: {}'.format(padding))
-        logger.info('Model path: {}'.format(model_path))
-        logger.info('Save images: {}'.format(save_imgs))
-        logger.info('Flip test: {}'.format(flip_test))
+        save_imgs = False
 
         raw_model.load_state_dict(torch.load(model_path), strict=True)
 
@@ -164,15 +172,12 @@ def main():
         for subfolder, subfolder_GT, subfolder_GT_a in zip(subfolder_l, subfolder_GT_l, subfolder_GT_a_l):
             subfolder_name = osp.basename(subfolder)
             subfolder_name_l.append(subfolder_name)
-            save_subfolder = osp.join(save_folder, subfolder_name)
 
             img_path_l = sorted(glob.glob(osp.join(subfolder, '*')))
             max_idx = len(img_path_l)
 
             print("MAX_IDX: ", max_idx)
 
-            if save_imgs:
-                util.mkdirs(save_subfolder)
 
             #### read LQ and GT images
             imgs_LQ = data_util.read_img_seq(subfolder)
@@ -199,9 +204,6 @@ def main():
                     output = util.single_forward(model, imgs_in)
                 output = util.tensor2img(output.squeeze(0))
 
-                if save_imgs:
-                    cv2.imwrite(osp.join(save_subfolder, '{}.png'.format(img_name)), output)
-
                 # calculate PSNR
                 output = output / 255.
                 GT = np.copy(img_GT_l[img_idx])
@@ -214,11 +216,14 @@ def main():
                 output, GT = util.crop_border([output, GT], crop_border)
                 crt_psnr = util.calculate_psnr(output * 255, GT * 255)
                 crt_ssim = util.calculate_ssim(output * 255, GT * 255)
-                if N_in == N_model_default:
-                    crt_aposterior = 1.0
-                else:
-                    crt_aposterior = util.calculate_ssim(output * 255, GT * 255)
+                crt_aposterior = util.calculate_ssim(output * 255, GT * 255)
 
+                dir_idx = dict.get(str(subfolder_name))
+
+
+                #total_results_vid4.update([])
+
+                #  добавляем в словарь имя папки -> имя файла -> имя метрики
 
                 #logger.info('{:3d} - {:25} \tPSNR: {:.6f} dB'.format(img_idx + 1, img_name, crt_psnr))
 
@@ -238,34 +243,14 @@ def main():
         #avg_psnr_center_l.append(avg_psnr_center)
         #avg_psnr_border_l.append(avg_psnr_border)
 
-        #logger.info('Folder {} - Average PSNR: {:.6f} dB for {} frames; '
-         #       'Center PSNR: {:.6f} dB for {} frames; '
-          #      'Border PSNR: {:.6f} dB for {} frames.'.format(subfolder_name, avg_psnr,
-           #                                                            (N_center + N_border),
-            #                                                           avg_psnr_center, N_center,
-             #                                                          avg_psnr_border, N_border))
 
-        #logger.info('################ Tidy Outputs ################')
-   # for subfolder_name, psnr, psnr_center, psnr_border in zip(subfolder_name_l, avg_psnr_l,
-     #                                                         avg_psnr_center_l, avg_psnr_border_l):
-    #    logger.info('Folder {} - Average PSNR: {:.6f} dB. '
-     #               'Center PSNR: {:.6f} dB. '
-      #              'Border PSNR: {:.6f} dB.'.format(subfolder_name, psnr, psnr_center,
-         #                                            psnr_border))
-    #logger.info('################ Final Results ################')
-    #logger.info('Data: {} - {}'.format(data_mode, test_dataset_folder))
-    #logger.info('Padding mode: {}'.format(padding))
-    #logger.info('Model path: {}'.format(model_path))
-    #logger.info('Save images: {}'.format(save_imgs))
-    #logger.info('Flip test: {}'.format(flip_test))
-    #logger.info('Total Average PSNR: {:.6f} dB for {} clips. '
-     #           'Center PSNR: {:.6f} dB. Border PSNR: {:.6f} dB.'.format(
-      #  sum(avg_psnr_l) / len(avg_psnr_l), len(subfolder_l),
-       # sum(avg_psnr_center_l) / len(avg_psnr_center_l),
-        #sum(avg_psnr_border_l) / len(avg_psnr_border_l)))
 
     ############################################################################
     #### model
+
+
+
+#### writing vid4  results
 
 
 

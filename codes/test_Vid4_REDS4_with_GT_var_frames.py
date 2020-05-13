@@ -93,22 +93,22 @@ def main():
         back_RBs = 20
 
 
-    N_model_default = 7
-
-    raw_model = EDVR_arch.EDVR(128, N_model_default, 8, 5, back_RBs, predeblur=predeblur, HR_in=HR_in)
-    model = EDVR_arch.EDVR(128, N_in, 8, 5, back_RBs, predeblur=predeblur, HR_in=HR_in)
-
     #### dataset
     if data_mode == 'Vid4':
+        N_model_default = 7
         test_dataset_folder = '../datasets/Vid4/BIx4'
         GT_dataset_folder = '../datasets/Vid4/GT'
     else:
+        N_model_default = 5
         if stage == 1:
             test_dataset_folder = '../datasets/REDS4/{}'.format(data_mode)
         else:
             test_dataset_folder = '../results/REDS-EDVR_REDS_SR_L_flipx4'
             print('You should modify the test_dataset_folder path for stage 2')
         GT_dataset_folder = '../datasets/REDS4/GT'
+
+    raw_model = EDVR_arch.EDVR(128, N_model_default, 8, 5, back_RBs, predeblur=predeblur, HR_in=HR_in)
+    model = EDVR_arch.EDVR(128, N_in, 8, 5, back_RBs, predeblur=predeblur, HR_in=HR_in)
 
     #### evaluation
     crop_border = 0
