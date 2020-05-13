@@ -1,99 +1,70 @@
+    #reds4_dir_map = {"000": 0, "011": 1, "015": 2, "020": 3}
+    #reds4_files_map = 4 * [{}]
 
-'''
-Test Vid4 (SR) and REDS4 (SR-clean, SR-blur, deblur-clean, deblur-compression) datasets
-'''
+    #reds4_results = 4 * [[]]
 
-import os
-import os.path as osp
-import glob
-import logging
-import numpy as np
-import cv2
-import torch
-import copy
-import json
-
-import utils.util as util
-import data.util as data_util
-import models.archs.EDVR_arch as EDVR_arch
-
-import argparse
-
-class metrics_file:
-
-    def __init__(self, name):
-        self.name = name
-        self.gt_ssim = []
-        self.aposterior_ssim = []
-        self.psnr = []
-
-    def add_gt_ssim(self, gt_ssim):
-        self.gt_ssim.append(gt_ssim)
-
-    def add_aposterior_ssim(self, aposterior_ssim):
-        self.aposterior_ssim.append(aposterior_ssim)
-
-    def add_psnr(self, psnr):
-        self.psnr.append(psnr)
+    #for N_in in range(1, N_model_default + 1):
+    #    for stage in range(2):
+    #    data_mode = 'blur_comp'
 
 
+            #  data_mode == 'blur_comp'::   by default
+    #        if stage == 0:
+    #            model_path = '../experiments/pretrained_models/EDVR_REDS_deblurcomp_L.pth'
+    #        else:
+    #            model_path = '../experiments/pretrained_models/EDVR_REDS_deblurcomp_Stage2.pth'
 
-def main():
-    ####################
-    # arguments parser #
-    ####################
-    #  [format] dataset(vid4, REDS4) N(number of frames)
+    #    predeblur, HR_in = False, False
+    #    back_RBs = 40
+    #    if data_mode == 'blur_bicubic':
+    #        predeblur = True
+    #    if data_mode == 'blur' or data_mode == 'blur_comp':
+    #        predeblur, HR_in = True, True
+    #    if stage == 2:
+    #        HR_in = True
+    #        back_RBs = 20
+
+    #    if data_mode == 'Vid4':
+    #        N_model_default = 7
+    #    else:
+    #        N_model_default = 5
+
+     #   raw_model = EDVR_arch.EDVR(128, N_model_default, 8, 5, back_RBs, predeblur=predeblur, HR_in=HR_in)
+    #    model = EDVR_arch.EDVR(128, N_in, 8, 5, back_RBs, predeblur=predeblur, HR_in=HR_in)
+
+        #### dataset
+     #   if data_mode == 'Vid4':
+      #      test_dataset_folder = '../datasets/Vid4/BIx4'
+      #      GT_dataset_folder = '../datasets/Vid4/GT'
+      #  else:
+      #      if stage == 1:
+      #          test_dataset_folder = '../datasets/REDS4/{}'.format(data_mode)
+      #      else:
+      #          test_dataset_folder = '../results/REDS-EDVR_REDS_SR_L_flipx4'
+      #          print('You should modify the test_dataset_folder path for stage 2')
+      #      GT_dataset_folder = '../datasets/REDS4/GT'
+
+        #### evaluation
+     #   crop_border = 0
+     #   border_frame = N_in // 2  # border frames when evaluate
+        # temporal padding mode
+     #   if data_mode == 'Vid4' or data_mode == 'sharp_bicubic':
+     #       padding = 'new_info'
+     #   else:
+     #       padding = 'replicate'
 
 
+      #  raw_model = EDVR_arch.EDVR(128, N_model_default, 8, 5, back_RBs, predeblur=predeblur, HR_in=HR_in)
+      #  model = EDVR_arch.EDVR(128, N_in, 8, 5, back_RBs, predeblur=predeblur, HR_in=HR_in)
 
-   # data_mode = str(args.dataset)
-   # N_in = int(args.n_frames)
-   # metrics = str(args.metrics)
-   # output_format = str(args.output_format)
-
-
-    #################
-    # configurations
-    #################
-    device = torch.device('cuda')
-    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-    #data_mode = 'Vid4'  # Vid4 | sharp_bicubic | blur_bicubic | blur | blur_comp
-    # Vid4: SR
-    # REDS4: sharp_bicubic (SR-clean), blur_bicubic (SR-blur);
-    #        blur (deblur-clean), blur_comp (deblur-compression).
-
-
-    # STAGE Vid4
-    # Collecting results for Vid4
-
-    model_path = '../experiments/pretrained_models/EDVR_Vimeo90K_SR_L.pth'
-    stage = 1  # 1 or 2, use two stage strategy for REDS dataset.
-    flip_test = False
-
-    predeblur, HR_in = False, False
-    back_RBs = 40
-
-    N_model_default = 7
-    data_mode = 'Vid4'
-
-    vid4_dir_map = {"calendar": 0, "city": 1, "foliage": 2, "walk": 3}
-    vid4_files_map = 4 * [{}]
-
-    vid4_results = 4 * [[]]
-
-    for N_in in range(1, N_model_default + 1):
-        raw_model = EDVR_arch.EDVR(128, N_model_default, 8, 5, back_RBs, predeblur=predeblur, HR_in=HR_in)
-        model = EDVR_arch.EDVR(128, N_in, 8, 5, back_RBs, predeblur=predeblur, HR_in=HR_in)
-
-        test_dataset_folder = '../datasets/Vid4/BIx4'
-        GT_dataset_folder = '../datasets/Vid4/GT'
-        aposterior_GT_dataset_folder = '../results/Vid4/GT_7'
+      #  test_dataset_folder = '../datasets/Vid4/BIx4'
+      #  GT_dataset_folder = '../datasets/Vid4/GT'
+      #  aposterior_GT_dataset_folder = '../results/Vid4/GT_7'
 
         crop_border = 0
         border_frame = N_in // 2  # border frames when evaluate
         padding = 'new_info'
 
-        save_imgs = False
 
         raw_model.load_state_dict(torch.load(model_path), strict=True)
 
@@ -222,94 +193,18 @@ def main():
 
                 output_a, GT_a = util.crop_border([output_a, GT_a], crop_border)
 
-                crt_aposterior = util.calculate_ssim(output_a * 255, GT_a * 255)  # CHANGE
+              #  crt_aposterior = util.calculate_ssim(output_a * 255, GT_a * 255)  # CHANGE
 
-                dir_idx = vid4_dir_map.get(str(subfolder_name))
-                file_idx = vid4_files_map[dir_idx].get(str(img_name))
-                if file_idx != None:
-                    vid4_results[dir_idx][file_idx].add_psnr(crt_psnr)
-                    vid4_results[dir_idx][file_idx].add_gt_ssim(crt_ssim)
-                    vid4_results[dir_idx][file_idx].add_aposterior_ssim(crt_aposterior)
-                else:
-                    vid4_results[dir_idx].append(metrics_file(str(img_name)))
-                    new_file_idx = len(vid4_results[dir_idx]) - 1
-                    vid4_results[dir_idx][new_file_idx].add_psnr(crt_psnr)
-                    vid4_results[dir_idx][new_file_idx].add_gt_ssim(crt_ssim)
-                    vid4_results[dir_idx][new_file_idx].add_aposterior_ssim(crt_aposterior)
-                    vid4_files_map[dir_idx].update([(str(img_name), new_file_idx)])
-
-
-                #  добавляем в словарь имя папки -> имя файла -> имя метрики
-
-                #logger.info('{:3d} - {:25} \tPSNR: {:.6f} dB'.format(img_idx + 1, img_name, crt_psnr))
-
-
-
-                #if img_idx >= border_frame and img_idx < max_idx - border_frame:  # center frames
-                #    avg_psnr_center += crt_psnr
-                #    N_center += 1
-                #else:  # border frames
-                #    avg_psnr_border += crt_psnr
-                #    N_border += 1
-
-        #avg_psnr = (avg_psnr_center + avg_psnr_border) / (N_center + N_border)
-        #avg_psnr_center = avg_psnr_center / N_center
-        #avg_psnr_border = 0 if N_border == 0 else avg_psnr_border / N_border
-        #avg_psnr_l.append(avg_psnr)
-        #avg_psnr_center_l.append(avg_psnr_center)
-        #avg_psnr_border_l.append(avg_psnr_border)
-
-
-
-    ############################################################################
-    #### model
-
-
-
-#### writing vid4  results
-
-
-    #data_mode = 'Vid4'
-
-    util.mkdirs('../results/calendar')
-    util.mkdirs('../results/city')
-    util.mkdirs('../results/foliage')
-    util.mkdirs('../results/walk')
-    save_folder = '../results/'
-
-    for i, dir_name in enumerate(["calendar", "city", "foliage", "walk"]):
-        save_subfolder = osp.join(save_folder, dir_name)
-        for j in range(len(vid4_results[i])):
-            cur_result = json.dumps(vid4_results[i][j].__dict__)
-            with open(osp.join(save_subfolder, '{}.json'.format(vid4_results[i][j].name)), 'w') as outfile:
-                json.dump(cur_result, outfile)
-
-            #cv2.imwrite(osp.join(save_subfolder, '{}.png'.format(img_name)), output)
-
-
-
-###################################################################################
-
-
-
-
-
-
-
-
-
-    # STAGE REDS
-
-
-
-
-
-
-
-
-##########    printing REDS4
-
-
-
-if __name__ == '__main__':
-    main()
+              #  dir_idx = reds4_dir_map.get(str(subfolder_name))
+              #  file_idx = reds4_files_map[dir_idx].get(str(img_name))
+              #  if file_idx != None:
+              #      reds4_results[dir_idx][file_idx].add_psnr(crt_psnr)
+               #     reds4_results[dir_idx][file_idx].add_gt_ssim(crt_ssim)
+             #       reds4_results[dir_idx][file_idx].add_aposterior_ssim(crt_aposterior)
+            #    else:
+          #          reds4_results[dir_idx].append(metrics_file(str(img_name)))
+           #         new_file_idx = len(reds4_results[dir_idx]) - 1
+       #             reds4_results[dir_idx][new_file_idx].add_psnr(crt_psnr)
+         #           reds4_results[dir_idx][new_file_idx].add_gt_ssim(crt_ssim)
+        #            reds4_results[dir_idx][new_file_idx].add_aposterior_ssim(crt_aposterior)
+         #           reds4_files_map[dir_idx].update([(str(img_name), new_file_idx)])
