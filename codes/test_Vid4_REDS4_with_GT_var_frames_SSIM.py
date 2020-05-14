@@ -28,11 +28,13 @@ def main():
 
     parser.add_argument('dataset')
     parser.add_argument('n_frames')
+    parser.add_argument('stage')
 
     args = parser.parse_args()
 
     data_mode = str(args.dataset)
     N_in = int(args.n_frames)
+    stage = int(args.stage)
 
     #if args.command == 'start':
     #    start(int(args.params[0]))
@@ -50,7 +52,7 @@ def main():
     # Vid4: SR
     # REDS4: sharp_bicubic (SR-clean), blur_bicubic (SR-blur);
     #        blur (deblur-clean), blur_comp (deblur-compression).
-    stage = 1  # 1 or 2, use two stage strategy for REDS dataset.
+    #stage = 1  # 1 or 2, use two stage strategy for REDS dataset.
     flip_test = False
     ############################################################################
     #### model
@@ -120,7 +122,11 @@ def main():
         padding = 'replicate'
     save_imgs = True
 
+    data_mode_t = copy.deepcopy(data_mode)
+    if stage == 1 and data_mode_t != 'Vid4':
+        data_mode = 'REDS-EDVR_REDS_SR_L_flipx4'
     save_folder = '../results/{}'.format(data_mode)
+    data_mode = copy.deepcopy(data_mode_t)
     util.mkdirs(save_folder)
     util.setup_logger('base', save_folder, 'test', level=logging.INFO, screen=True, tofile=True)
     logger = logging.getLogger('base')

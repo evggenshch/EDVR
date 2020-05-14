@@ -1,7 +1,4 @@
     #reds4_dir_map = {"000": 0, "011": 1, "015": 2, "020": 3}
-    #reds4_files_map = 4 * [{}]
-
-    #reds4_results = 4 * [[]]
 
     #for N_in in range(1, N_model_default + 1):
     #    for stage in range(2):
