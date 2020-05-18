@@ -264,6 +264,8 @@ def main():
 
         print("MAX_IDX: ", max_idx)
 
+        print("SAVE FOLDER::::::", save_folder)
+
         if save_imgs:
             util.mkdirs(save_subfolder)
 
