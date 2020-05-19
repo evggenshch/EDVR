@@ -275,6 +275,8 @@ def main():
     reds4_results = {"000": {}, "011": {}, "015": {}, "020": {}}
     data_mode = 'sharp_bicubic'
 
+    N_model_default = 5
+
     for N_in in range(1, N_model_default + 1):
         for stage in range(1,2):
 
@@ -313,7 +315,6 @@ def main():
                 HR_in = True
                 back_RBs = 20
 
-            N_model_default = 5
             if stage == 1:
                 test_dataset_folder = '../datasets/REDS4/{}'.format(data_mode)
             else:
