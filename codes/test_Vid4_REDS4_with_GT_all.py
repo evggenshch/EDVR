@@ -278,7 +278,7 @@ def main():
     N_model_default = 5
 
     for N_in in range(1, N_model_default + 1):
-        for stage in range(1,2):
+        for stage in range(1,3):
 
             flip_test = False
 
@@ -423,13 +423,20 @@ def main():
             subfolder_GT_a_l = sorted(glob.glob(osp.join(aposterior_GT_dataset_folder, "*")))
     # for each subfolder
             for subfolder, subfolder_GT, subfolder_GT_a in zip(subfolder_l, subfolder_GT_l, subfolder_GT_a_l):
+
                 subfolder_name = osp.basename(subfolder)
                 subfolder_name_l.append(subfolder_name)
+                save_subfolder = osp.join(save_folder, subfolder_name)
 
                 img_path_l = sorted(glob.glob(osp.join(subfolder, '*')))
                 max_idx = len(img_path_l)
 
                 print("MAX_IDX: ", max_idx)
+
+                print("SAVE FOLDER::::::", save_folder)
+
+                if save_imgs:
+                    util.mkdirs(save_subfolder)
 
 
             #### read LQ and GT images
@@ -457,7 +464,7 @@ def main():
                         output = util.single_forward(model, imgs_in)
                     output = util.tensor2img(output.squeeze(0))
 
-                    if save_imgs:
+                    if save_imgs and stage == 1:
                         cv2.imwrite(osp.join(save_subfolder, '{}.png'.format(img_name)), output)
                     # calculate PSNR
                     if stage == 2:
