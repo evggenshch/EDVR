@@ -257,7 +257,8 @@ def main():
         for j, value in vid4_results[dir_name].items():
             cur_result = json.dumps(value.__dict__)
             with open(osp.join(save_subfolder, '{}.json'.format(value.name)), 'w') as outfile:
-                json.dump(cur_result, outfile)
+                json.dump(cur_result, outfile, ensure_ascii=False, indent=4)
+                #json.dump(cur_result, outfile)
 
             #cv2.imwrite(osp.join(save_subfolder, '{}.png'.format(img_name)), output)
 
@@ -272,7 +273,7 @@ def main():
     # STAGE REDS
 
     reds4_results = {"000": {}, "011": {}, "015": {}, "020": {}}
-    data_mode = 'blur_comp'
+    data_mode = 'sharp_bicubic'
 
     for N_in in range(1, N_model_default + 1):
         for stage in range(1,2):
@@ -345,7 +346,6 @@ def main():
 
             crop_border = 0
             border_frame = N_in // 2  # border frames when evaluate
-            padding = 'new_info'
 
             raw_model.load_state_dict(torch.load(model_path), strict=True)
 
@@ -456,38 +456,39 @@ def main():
                         output = util.single_forward(model, imgs_in)
                     output = util.tensor2img(output.squeeze(0))
 
+                    if save_imgs:
+                        cv2.imwrite(osp.join(save_subfolder, '{}.png'.format(img_name)), output)
                     # calculate PSNR
-                    output = output / 255.
-                    GT = np.copy(img_GT_l[img_idx])
-                    # For REDS, evaluate on RGB channels; for Vid4, evaluate on the Y channel
-                    #if data_mode == 'Vid4':  # bgr2y, [0, 1]
+                    if stage == 2:
 
-                    GT = data_util.bgr2ycbcr(GT, only_y=True)
-                    output = data_util.bgr2ycbcr(output, only_y=True)
-                    GT_a = np.copy(img_GT_a[img_idx])
-                    GT_a = data_util.bgr2ycbcr(GT_a, only_y=True)
-                    output_a = copy.deepcopy(output)
+                        output = output / 255.
+                        GT = np.copy(img_GT_l[img_idx])
+                        # For REDS, evaluate on RGB channels; for Vid4, evaluate on the Y channel
+                        #if data_mode == 'Vid4':  # bgr2y, [0, 1]
 
-                    output, GT = util.crop_border([output, GT], crop_border)
-                    crt_psnr = util.calculate_psnr(output * 255, GT * 255)
-                    crt_ssim = util.calculate_ssim(output * 255, GT * 255)
+                        GT_a = np.copy(img_GT_a[img_idx])
+                        output_a = copy.deepcopy(output)
 
-                    output_a, GT_a = util.crop_border([output_a, GT_a], crop_border)
+                        output, GT = util.crop_border([output, GT], crop_border)
+                        crt_psnr = util.calculate_psnr(output * 255, GT * 255)
+                        crt_ssim = util.calculate_ssim(output * 255, GT * 255)
 
-                    crt_aposterior = util.calculate_ssim(output_a * 255, GT_a * 255)  # CHANGE
+                        output_a, GT_a = util.crop_border([output_a, GT_a], crop_border)
+
+                        crt_aposterior = util.calculate_ssim(output_a * 255, GT_a * 255)  # CHANGE
 
 
-                    t = reds4_results[subfolder_name].get(str(img_name))
+                        t = reds4_results[subfolder_name].get(str(img_name))
 
-                    if t != None:
-                        reds4_results[subfolder_name][img_name].add_psnr(crt_psnr)
-                        reds4_results[subfolder_name][img_name].add_gt_ssim(crt_ssim)
-                        reds4_results[subfolder_name][img_name].add_aposterior_ssim(crt_aposterior)
-                    else:
-                        reds4_results[subfolder_name].update({img_name: metrics_file(img_name)})
-                        reds4_results[subfolder_name][img_name].add_psnr(crt_psnr)
-                        reds4_results[subfolder_name][img_name].add_gt_ssim(crt_ssim)
-                        reds4_results[subfolder_name][img_name].add_aposterior_ssim(crt_aposterior)
+                        if t != None:
+                            reds4_results[subfolder_name][img_name].add_psnr(crt_psnr)
+                            reds4_results[subfolder_name][img_name].add_gt_ssim(crt_ssim)
+                            reds4_results[subfolder_name][img_name].add_aposterior_ssim(crt_aposterior)
+                        else:
+                            reds4_results[subfolder_name].update({img_name: metrics_file(img_name)})
+                            reds4_results[subfolder_name][img_name].add_psnr(crt_psnr)
+                            reds4_results[subfolder_name][img_name].add_gt_ssim(crt_ssim)
+                            reds4_results[subfolder_name][img_name].add_aposterior_ssim(crt_aposterior)
 
 
 
@@ -509,7 +510,7 @@ def main():
         for j, value in reds4_results[dir_name].items():
             cur_result = json.dumps(value.__dict__)
             with open(osp.join(save_subfolder, '{}.json'.format(value.name)), 'w') as outfile:
-                json.dump(cur_result, outfile)
+                json.dump(cur_result, outfile, ensure_ascii=False, indent=4)
 
 
 
