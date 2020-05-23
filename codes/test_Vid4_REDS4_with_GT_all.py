@@ -255,9 +255,9 @@ def main():
     for i, dir_name in enumerate(["calendar", "city", "foliage", "walk"]):
         save_subfolder = osp.join(save_folder, dir_name)
         for j, value in vid4_results[dir_name].items():
-            cur_result = json.dumps(value.__dict__)
+         #   cur_result = json.dumps(_)
             with open(osp.join(save_subfolder, '{}.json'.format(value.name)), 'w') as outfile:
-                json.dump(cur_result, outfile, ensure_ascii=False, indent=4)
+                json.dump(value.__dict_, outfile, ensure_ascii=False, indent=4)
                 #json.dump(cur_result, outfile)
 
             #cv2.imwrite(osp.join(save_subfolder, '{}.png'.format(img_name)), output)
@@ -516,9 +516,9 @@ def main():
     for i, dir_name in enumerate(["000", "011", "015", "020"]):     #   +
         save_subfolder = osp.join(save_folder, dir_name)
         for j, value in reds4_results[dir_name].items():
-            cur_result = json.dumps(value.__dict__)
+           # cur_result = json.dumps(value.__dict__)
             with open(osp.join(save_subfolder, '{}.json'.format(value.name)), 'w') as outfile:
-                json.dump(cur_result, outfile, ensure_ascii=False, indent=4)
+                json.dump(value.__dict_, outfile, ensure_ascii=False, indent=4)
 
 
 
