@@ -186,7 +186,7 @@ def glarefree_index_generation(crt_i, max_n, N, padding='reflection'):     #   H
     return_l.append(crt_i)
 
     for i in range(N - 1):
-        return_l.append(((i + 1) * idx_shift) % max_n)
+        return_l.append((crt_i + (i + 1) * idx_shift) % max_n)
 
 
   #  for i in range(crt_i - n_pad, crt_i + n_pad + (N % 2)):  #+ 1):
