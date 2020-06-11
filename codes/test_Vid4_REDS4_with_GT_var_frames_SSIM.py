@@ -278,7 +278,10 @@ def main():
         # process each image
         for img_idx, img_path in enumerate(img_path_l):
             img_name = osp.splitext(osp.basename(img_path))[0]
-            select_idx = data_util.index_generation(img_idx, max_idx, N_in, padding=padding)    #  HERE GOTCHA
+            if data_mode == "blur":
+                select_idx = data_util.glarefree_index_generation(img_idx, max_idx, N_in, padding=padding)
+            else:
+                select_idx = data_util.index_generation(img_idx, max_idx, N_in, padding=padding)    #  HERE GOTCHA
             print("SELECT IDX: ", select_idx)
 
             imgs_in = imgs_LQ.index_select(0, torch.LongTensor(select_idx)).unsqueeze(0).to(device)

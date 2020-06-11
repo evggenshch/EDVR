@@ -159,6 +159,52 @@ def index_generation(crt_i, max_n, N, padding='reflection'):     #   HERE MISMAT
     return return_l
 
 
+def glarefree_index_generation(crt_i, max_n, N, padding='reflection'):     #   HERE MISMATCH
+    """Generate an index list for reading N frames from a sequence of images
+    Args:
+        crt_i (int): current center index
+        max_n (int): max number of the sequence of images (calculated from 1)
+        N (int): reading N frames
+        padding (str): padding mode, one of replicate | reflection | new_info | circle
+            Example: crt_i = 0, N = 5
+            replicate: [0, 0, 0, 1, 2]
+            reflection: [2, 1, 0, 1, 2]
+            new_info: [4, 3, 0, 1, 2]
+            circle: [3, 4, 0, 1, 2]
+
+    Returns:
+        return_l (list [int]): a list of indexes
+    """
+
+
+    max_n = max_n - 1
+    n_pad = N // 2
+    return_l = []
+
+    idx_shift = max_n // N
+
+    return_l.append(crt_i)
+
+    for i in range(N - 1):
+        return_l.append(((i + 1) * idx_shift) % max_n)
+
+
+  #  for i in range(crt_i - n_pad, crt_i + n_pad + (N % 2)):  #+ 1):
+  #      if i < 0:
+  #          if padding == 'replicate':
+  #              add_idx = 0
+  #      elif i > max_n:
+   #         if padding == 'replicate':
+   #             add_idx = max_n
+   #     else:
+   #         add_idx = i
+   #     return_l.append(add_idx)
+
+
+    return return_l
+
+
+
 ####################
 # image processing
 # process on numpy image
