@@ -1,13 +1,20 @@
 """Create lmdb files for [General images (291 images/DIV2K) | Vimeo90K | REDS] training datasets"""
 
 import sys
+import os
 import os.path as osp
 import glob
 import pickle
 from multiprocessing import Pool
 import numpy as np
+
+#os.environ['LMDB_FORCE_SYSTEM'] = '1'
+
+
 import lmdb
 import cv2
+
+
 
 sys.path.append(osp.dirname(osp.dirname(osp.abspath(__file__))))
 import data.util as data_util  # noqa: E402
@@ -15,7 +22,7 @@ import utils.util as util  # noqa: E402
 
 
 def main():
-    dataset = 'DIV2K_demo'  # vimeo90K | REDS | general (e.g., DIV2K, 291) | DIV2K_demo |test
+    dataset = 'general'  # vimeo90K | REDS | general (e.g., DIV2K, 291) | DIV2K_demo |test
     mode = 'GT'  # used for vimeo90k and REDS datasets
     # vimeo90k: GT | LR | flow
     # REDS: train_sharp, train_sharp_bicubic, train_blur_bicubic, train_blur, train_blur_comp
@@ -26,9 +33,9 @@ def main():
         REDS(mode)
     elif dataset == 'general':
         opt = {}
-        opt['img_folder'] = '../../datasets/DIV2K/DIV2K800_sub'
-        opt['lmdb_save_path'] = '../../datasets/DIV2K/DIV2K800_sub.lmdb'
-        opt['name'] = 'DIV2K800_sub_GT'
+        opt['img_folder'] = '../../../../datasets/MIDV_EDVR_Training/midv_gt'
+        opt['lmdb_save_path'] = '../../../../datasets/MIDV_EDVR_Training/midv_gt.lmdb'
+        opt['name'] = 'MIDV_GT'
         general_image_folder(opt)
     elif dataset == 'DIV2K_demo':
         opt = {}
