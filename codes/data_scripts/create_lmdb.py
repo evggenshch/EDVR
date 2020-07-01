@@ -33,9 +33,9 @@ def main():
         REDS(mode)
     elif dataset == 'general':
         opt = {}
-        opt['img_folder'] = '../../../../datasets/MIDV_EDVR_Training/midv_gt'
-        opt['lmdb_save_path'] = '../../../../datasets/MIDV_EDVR_Training/midv_gt.lmdb'
-        opt['name'] = 'MIDV_GT'
+        opt['img_folder'] = '../../../../MIDV_EDVR_Training/midv_train/'
+        opt['lmdb_save_path'] = '../../../../MIDV_EDVR_Training/midv_train.lmdb'
+        opt['name'] = 'MIDV_TRAIN'
         general_image_folder(opt)
     elif dataset == 'DIV2K_demo':
         opt = {}

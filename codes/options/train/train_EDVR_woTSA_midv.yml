@@ -1,21 +1,21 @@
 #### general settings
-name: 001_EDVRwoTSA_scratch_lr4e-4_600k_REDS_LrCAR4S
+name: 001_EDVRwoTSA_scratch_2x_480_270_MIDV
 use_tb_logger: true
 model: video_base
 distortion: sr
-scale: 4
+scale: 2
 gpu_ids: [0]
 
 #### datasets
 datasets:
   train:
-    name: REDS
+    name: MIDV
     mode: REDS
     interval_list: [1]
     random_reverse: false
     border_mode: false
-    dataroot_GT: ../datasets/REDS/train_sharp_wval.lmdb
-    dataroot_LQ: ../datasets/REDS/train_sharp_bicubic_wval.lmdb
+    dataroot_GT: ../datasets/MIDV/midv_gt.lmdb
+    dataroot_LQ: ../datasets/MIDV/midv_train.lmdb
     cache_keys: ~
 
     N_frames: 5
