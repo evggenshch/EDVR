@@ -1,7 +1,7 @@
 #### general settings
 name: 001_EDVRwoTSA_scratch_2x_480_270_MIDV
 use_tb_logger: true
-model: video_base
+model: sr
 distortion: sr
 scale: 2
 gpu_ids: [0]
