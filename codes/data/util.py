@@ -155,7 +155,7 @@ def index_generation(crt_i, max_n, N, padding='reflection'):     #   HERE MISMAT
                 raise ValueError('Wrong padding mode')
         else:
             add_idx = i
-        if add_idx < 0:
+        if (add_idx < 0) or (add_idx > max_n):
             add_idx = 0
         return_l.append(add_idx)
     return return_l
