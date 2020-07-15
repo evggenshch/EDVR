@@ -154,7 +154,9 @@ def main():
             model.update_learning_rate(current_step, warmup_iter=opt['train']['warmup_iter'])
 
             #### training
-            model.feed_data(train_data)
+            print("DATA SHAPE DEBUG: ", train_data.shape)
+
+            model.feed_data(train_data)                     ###             ERROR HERE
             model.optimize_parameters(current_step)
 
             #### log

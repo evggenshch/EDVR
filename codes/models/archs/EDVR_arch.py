@@ -162,6 +162,9 @@ class TSA_Fusion(nn.Module):
 
     def forward(self, aligned_fea):
         B, N, C, H, W = aligned_fea.size()  # N video frames
+
+
+
         #### temporal attention
         emb_ref = self.tAtt_2(aligned_fea[:, self.center, :, :, :].clone())
         emb = self.tAtt_1(aligned_fea.view(-1, C, H, W)).view(B, N, -1, H, W)  # [B, N, C(nf), H, W]
